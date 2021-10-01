@@ -18,5 +18,7 @@ class FiniteAutomatonEvaluator(
         raise NotImplementedError("This method must be implemented.")
 
     def is_accepting(self) -> bool:
-
-        raise NotImplementedError("This method must be implemented.")
+        for s in self.current_states:
+            if s.is_final:
+                return True
+        return False
