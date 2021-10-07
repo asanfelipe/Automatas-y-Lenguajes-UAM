@@ -1,6 +1,6 @@
 """Conversion from regex to automata."""
-from automaton import FiniteAutomaton
-from re_parser_interfaces import AbstractREParser
+from automata.automaton import FiniteAutomaton
+from automata.re_parser_interfaces import AbstractREParser
 
 
 class REParser(AbstractREParser):
