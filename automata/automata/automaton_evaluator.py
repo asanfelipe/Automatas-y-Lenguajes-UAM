@@ -11,14 +11,17 @@ class FiniteAutomatonEvaluator(
     """Evaluator of an automaton."""
 
     def process_symbol(self, symbol: str) -> None:
-        raise NotImplementedError("This method must be implemented.")
+        for state in self.current_states:
+            if symbol in state:
+        
+        #raise NotImplementedError("This method must be implemented.")
 
     def _complete_lambdas(self, set_to_complete: Set[State]) -> None:
 
         raise NotImplementedError("This method must be implemented.")
 
     def is_accepting(self) -> bool:
-        for s in self.current_states:
-            if s.is_final:
+        for state in self.current_states:
+            if state.is_final:
                 return True
         return False
