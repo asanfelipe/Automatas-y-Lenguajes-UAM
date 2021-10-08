@@ -25,15 +25,11 @@ class FiniteAutomatonEvaluator(
         self._complete_lambdas(states)
 
         self.current_states = states
-        #for state in self.current_states:
-         #   if symbol in state:
-        
+       
 
     def _complete_lambdas(self, set_to_complete: Set[State]) -> None:
-
-
         for t in self.automaton.transitions:
-            if t.initial_state in self.set_to_complete:
+            if t.initial_state in set_to_complete:
                 if t.symbol is None:
                     set_to_complete.add(t.final_state)
 
