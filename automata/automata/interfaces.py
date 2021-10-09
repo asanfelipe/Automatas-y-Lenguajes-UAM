@@ -64,7 +64,12 @@ class AbstractTransition(ABC, Generic[_State]):
     initial_state: _State
     symbol: Optional[str]
     final_state: _State
-
+    # trns = Transicion(initial_state, symbol,  final_state)
+    # trns1 = Transicion(initial_state1, symbol1,  final_state1)
+    # trns.initial_state
+    # trns.loquesea()
+    # trns != trns1
+    # print(trns)
     def __init__(
         self,
         initial_state: _State,
@@ -74,6 +79,7 @@ class AbstractTransition(ABC, Generic[_State]):
         self.initial_state = initial_state
         self.symbol = symbol
         self.final_state = final_state
+      
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, type(self)):
