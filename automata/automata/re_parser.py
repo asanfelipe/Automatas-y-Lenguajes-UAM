@@ -10,21 +10,40 @@ class REParser(AbstractREParser):
         self,
     ) -> FiniteAutomaton:
 
-        listaEstados = [State('inicial', False), State('final', True)]
-        return FiniteAutomaton(listaEstados[0], listaEstados, [], [])
+        q0 = State(str(super.state_counter), False)
+
+        super.state_counter += 1
+        qf = State(str(super.state_counter), True)
+
+        listaEstados = [q0, qf]
+        return FiniteAutomaton(q0, listaEstados, [], [])
 
     def _create_automaton_lambda(
         self,
     ) -> FiniteAutomaton:
-        listaEstados = [State('inicial', False), State('final', True)]
-        transicion = Transition(listaEstados[0], None, listaEstados[1])
-        return FiniteAutomaton(listaEstados[0], listaEstados, [], transicion)
+
+        q0 = State(str(super.state_counter), False)
+
+        super.state_counter += 1
+        qf = State(str(super.state_counter), True)
+
+        listaEstados = [q0, qf]
+        transiciones = Collection[Transition(q0, None, qf)]
+        return FiniteAutomaton(q0, listaEstados, [], transiciones)
 
     def _create_automaton_symbol(
         self,
         symbol: str,
     ) -> FiniteAutomaton:
-        raise NotImplementedError("This method must be implemented.")
+
+        q0 = State(str(super.state_counter), False)
+
+        super.state_counter += 1
+        qf = State(str(super.state_counter), True)
+
+        listaEstados = [q0, qf]
+        transiciones = Collection[Transition(q0, symbol, qf)]
+        return FiniteAutomaton(q0, listaEstados, [], transiciones)
 
     def _create_automaton_star(
         self,
