@@ -1,8 +1,8 @@
 """Evaluation of automata."""
 from typing import Set
 
-from automata.automaton import FiniteAutomaton, State
-from automata.interfaces import AbstractFiniteAutomatonEvaluator
+from automaton import FiniteAutomaton, State
+from interfaces import AbstractFiniteAutomatonEvaluator
 
 
 class FiniteAutomatonEvaluator(

@@ -3,9 +3,12 @@ import unittest
 from abc import ABC, abstractmethod
 from typing import Optional, Type
 
-from automata.automaton import FiniteAutomaton
-from automata.automaton_evaluator import FiniteAutomatonEvaluator
-from automata.utils import AutomataFormat
+import sys
+sys.path.append("D:/UNIVERSIDAD/1er cuatri/AUTLEN/PRACTICAS/P1/autlen21-22/automata/automata")
+
+from automaton import FiniteAutomaton
+from automaton_evaluator import FiniteAutomatonEvaluator
+from utils import AutomataFormat
 
 
 class TestEvaluatorBase(ABC, unittest.TestCase):

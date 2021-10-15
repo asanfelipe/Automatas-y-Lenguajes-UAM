@@ -1,7 +1,7 @@
 """Automaton implementation."""
 from typing import Collection
 
-from automata.interfaces import (
+from interfaces import (
     AbstractFiniteAutomaton,
     AbstractState,
     AbstractTransition,
