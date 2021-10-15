@@ -43,7 +43,8 @@ class REParser(AbstractREParser):
 
         listaEstados = [q0, qf]
         transiciones = Collection[Transition(q0, symbol, qf)]
-        return FiniteAutomaton(q0, listaEstados, [], transiciones)
+        sym = Collection[symbol]
+        return FiniteAutomaton(q0, listaEstados, sym, transiciones)
 
     def _create_automaton_star(
         self,
