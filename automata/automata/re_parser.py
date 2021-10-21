@@ -65,18 +65,54 @@ class REParser(AbstractREParser):
         self,
         automaton: FiniteAutomaton,
     ) -> FiniteAutomaton:
-        raise NotImplementedError("This method must be implemented.")
+
+        #En todos los automatas restantes hay que averiguar cómo se especifican un símbolo o un estado concreto
+        transiciones = [automaton.transitions, Transition(automaton.states, automaton.symbols, automaton.states)]
+
+        return FiniteAutomaton(initial_state=automaton.initial_state, states=automaton.states, symbols=automaton.symbols, transitions=transiciones)
 
     def _create_automaton_union(
         self,
         automaton1: FiniteAutomaton,
         automaton2: FiniteAutomaton,
     ) -> FiniteAutomaton:
-        raise NotImplementedError("This method must be implemented.")
+        
+        q0 = State(name=str(self.state_counter), is_final=False)
+        self.state_counter += 1
+        
+        qf = State(name=str(self.state_counter), is_final=True)
+        self.state_counter += 1
+
+        listaEstados = [q0, automaton1.states, automaton2.states, qf]
+        sym = [automaton2.symbols, automaton1.symbols]
+
+        for s in automaton1.states:
+            if s.is_final:
+                t_final1=Transition(s, sym, qf)
+
+        for s in automaton2.states:
+            if s.is_final:
+                t_final2=Transition(s, sym, qf)
+
+        transiciones = [automaton1.transitions, automaton2.transitions, Transition(q0, sym, automaton1.initial_state), 
+            Transition(q0, sym, automaton2.initial_state), t_final1, t_final2]
+
+
+        return FiniteAutomaton(initial_state=q0, states=listaEstados, symbols=sym, transitions=transiciones)
 
     def _create_automaton_concat(
         self,
         automaton1: FiniteAutomaton,
         automaton2: FiniteAutomaton,
     ) -> FiniteAutomaton:
-        raise NotImplementedError("This method must be implemented.")
+        
+        listaEstados = [automaton1.states, automaton2.states]
+        sym = [automaton1.symbols, automaton2.symbols]
+
+        for s in automaton1.states:
+            if s.is_final:
+                t_final=Transition(s, sym, automaton2.initial_state)
+
+        transiciones = [automaton1.transitions, automaton2.transitions, t_final]
+
+        return FiniteAutomaton(initial_state=automaton1.initial_state, states=listaEstados, symbols=sym, transitions=transiciones)
