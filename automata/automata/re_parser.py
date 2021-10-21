@@ -66,8 +66,14 @@ class REParser(AbstractREParser):
         automaton: FiniteAutomaton,
     ) -> FiniteAutomaton:
 
-        #En todos los automatas restantes hay que averiguar cómo se especifican un símbolo o un estado concreto
-        transiciones = [automaton.transitions, Transition(automaton.states, automaton.symbols, automaton.states)]
+        #En todos los automatas restantes hay que averiguar cómo se especifica un símbolo concreto
+        sym = [automaton.symbols]
+
+        for s in automaton.states:
+            if s.is_final:
+                t_final=Transition(s, sym, automaton.initial_state)
+
+        transiciones = [automaton.transitions, t_final]
 
         return FiniteAutomaton(initial_state=automaton.initial_state, states=automaton.states, symbols=automaton.symbols, transitions=transiciones)
 
