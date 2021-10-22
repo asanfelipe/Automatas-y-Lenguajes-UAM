@@ -156,10 +156,41 @@ class REParser(AbstractREParser):
 
         return FiniteAutomaton(initial_state=automaton1.initial_state, states=listaEstados, symbols=sym, transitions=transiciones)
 
-
+#Añadido por nosotros para poder ver que los autómatas están bien creados
+#Se puede ver el autómata dibujado en la página "dreampuf.github.io/GraphvizOnline/"
 if __name__ == "__main__":
     e = REParser()
-    symbol2_ = e._create_automaton_symbol("b")
+    #Autómata vacío
+    empty_ = e._create_automaton_empty()
+    print("AUTOMATA VACIO:")
+    print(write_dot(empty_))
+    print("#########################\n")
+    #Autómata lambda
+    lambda_ = e._create_automaton_lambda()
+    print("AUTOMATA LAMBDA:")
+    print(write_dot(lambda_))
+    print("#########################\n")
+    #Autómata símbolo
     symbol_ = e._create_automaton_symbol("a")
-    concat_ = e._create_automaton_concat(symbol_, symbol2_)
+    print("AUTOMATA SIMBOLO:")
+    print(write_dot(symbol_))
+    print("#########################\n")
+    #Autómata estrella
+    star_ = e._create_automaton_star(symbol_)
+    print("AUTOMATA ESTRELLA:")
+    print(write_dot(star_))
+    print("#########################\n")
+    #Autómata unión
+    symbol2_ = e._create_automaton_symbol("b")
+    symbol1_ = e._create_automaton_symbol("a")
+    union_ = e._create_automaton_union(symbol1_, symbol2_)
+    print("AUTOMATA UNION:")
+    print(write_dot(union_))
+    print("#########################\n")
+    #Autómata concatenado
+    symbol2_ = e._create_automaton_symbol("b")
+    symbol1_ = e._create_automaton_symbol("a")
+    concat_ = e._create_automaton_concat(symbol1_, symbol2_)
+    print("AUTOMATA CONCATENADO:")
     print(write_dot(concat_))
+    print("#########################\n")
