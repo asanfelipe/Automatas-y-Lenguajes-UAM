@@ -1,6 +1,7 @@
 """Test evaluation of regex parser."""
 import unittest
-
+import sys
+sys.path.append("D:/UNIVERSIDAD/1er cuatri/AUTLEN/PRACTICAS/P1/autlen21-22/automata/automata")
 from automaton_evaluator import FiniteAutomatonEvaluator
 from re_parser import REParser
 

@@ -44,12 +44,24 @@ class FiniteAutomaton(
 
         # Add here additional initialization code.
         # Do not change the constructor interface.
+        
+    # def copy(self) -> FiniteAutomaton:
+    #     return FiniteAutomaton(self.initial_state, self.states.copy(), self.symbols, transitions)
+        
 
     def to_deterministic(
         self,
-    ) -> "FiniteAutomaton":
+    ) -> AbstractFiniteAutomaton:
+        
+        
+        # Que queremos de devuelve el metodo:
+            # Nada. Modificamos las propiedas internas del objeto (self)
+            # FineteAutomaton. Creado a partir del self pero que sea determinista (sin modificar el self)
         raise NotImplementedError("This method must be implemented.")
-
+        
+# aut1 = FiniteAutomaton(....)
+# Opcion 1: aut1.to_deterministic() -> a partir de ahora aurt1 es determinista
+# Opcion 2: aut2 = aut1.to_deterministic() -> tengo 2 automatas uno determinista y otro no
     def to_minimized(
         self,
     ) -> "FiniteAutomaton":

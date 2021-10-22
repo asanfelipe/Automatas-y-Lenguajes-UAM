@@ -1,6 +1,7 @@
 """Conversion from regex to automata."""
 from automaton import FiniteAutomaton, State, Transition
 from re_parser_interfaces import AbstractREParser
+from automata.utils import write_dot
 #from typing import Collection #Esto no hace falta
 import sys
 sys.path.append("D:/UNIVERSIDAD/1er cuatri/AUTLEN/PRACTICAS/P1/autlen21-22/automata/automata")
@@ -69,6 +70,7 @@ class REParser(AbstractREParser):
         automaton: FiniteAutomaton,
     ) -> FiniteAutomaton:
 
+        #automaton = automaton.copy()
         q0 = State(name=str(self.state_counter), is_final=False)
         self.state_counter += 1
         
@@ -153,3 +155,11 @@ class REParser(AbstractREParser):
         transiciones.append(t_final)
 
         return FiniteAutomaton(initial_state=automaton1.initial_state, states=listaEstados, symbols=sym, transitions=transiciones)
+
+
+if __name__ == "__main__":
+    e = REParser()
+    symbol2_ = e._create_automaton_symbol("b")
+    symbol_ = e._create_automaton_symbol("a")
+    concat_ = e._create_automaton_concat(symbol_, symbol2_)
+    print(write_dot(concat_))

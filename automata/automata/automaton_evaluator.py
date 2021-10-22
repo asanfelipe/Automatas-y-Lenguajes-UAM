@@ -16,7 +16,7 @@ class FiniteAutomatonEvaluator(
         if symbol not in self.automaton.symbols:
             #generamos un error que indique que el símbolo no se encuentra en el alfabeto.
             raise ValueError(
-                f"Symbol not included in the alphabet"
+                "Symbol not included in alphabet"
             )
         #Creamos una nueva variable llamada states que se encuentra vacía al principio.
         states = set()
