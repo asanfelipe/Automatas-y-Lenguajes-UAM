@@ -2,6 +2,9 @@
 from automaton import FiniteAutomaton, State, Transition
 from re_parser_interfaces import AbstractREParser
 #from typing import Collection #Esto no hace falta
+import sys
+sys.path.append("D:/UNIVERSIDAD/1er cuatri/AUTLEN/PRACTICAS/P1/autlen21-22/automata/automata")
+
 
 
 class REParser(AbstractREParser):
@@ -66,16 +69,28 @@ class REParser(AbstractREParser):
         automaton: FiniteAutomaton,
     ) -> FiniteAutomaton:
 
-        #En todos los automatas restantes hay que averiguar cómo se especifica un símbolo concreto
-        sym = [automaton.symbols]
+        q0 = State(name=str(self.state_counter), is_final=False)
+        self.state_counter += 1
+        
+        qf = State(name=str(self.state_counter), is_final=True)
+        self.state_counter += 1
 
         for s in automaton.states:
             if s.is_final:
-                t_final=Transition(s, sym, automaton.initial_state)
+                t_final=Transition(s, None, automaton.initial_state)
 
-        transiciones = [automaton.transitions, t_final]
+        t1 = Transition(q0, None, automaton.initial_state)
+        t2 = Transition(q0, None, qf)
+        
+        for s in automaton.states:
+            if s.is_final:
+                t3=Transition(s, None, qf)
+                s.is_final.set(False)
 
-        return FiniteAutomaton(initial_state=automaton.initial_state, states=automaton.states, symbols=automaton.symbols, transitions=transiciones)
+        transiciones = [automaton.transitions, t_final, t1, t2, t3]
+        listaEstados = [q0, automaton.states, qf]
+
+        return FiniteAutomaton(initial_state=q0, states=listaEstados, symbols=automaton.symbols, transitions=transiciones)
 
     def _create_automaton_union(
         self,
@@ -94,14 +109,16 @@ class REParser(AbstractREParser):
 
         for s in automaton1.states:
             if s.is_final:
-                t_final1=Transition(s, sym, qf)
+                t_final1=Transition(s, None, qf)
+                s.is_final.set(False)
 
         for s in automaton2.states:
             if s.is_final:
-                t_final2=Transition(s, sym, qf)
+                t_final2=Transition(s, None, qf)
+                s.is_final.set(False)
 
-        transiciones = [automaton1.transitions, automaton2.transitions, Transition(q0, sym, automaton1.initial_state), 
-            Transition(q0, sym, automaton2.initial_state), t_final1, t_final2]
+        transiciones = [automaton1.transitions, automaton2.transitions, Transition(q0, None, automaton1.initial_state), 
+            Transition(q0, None, automaton2.initial_state), t_final1, t_final2]
 
 
         return FiniteAutomaton(initial_state=q0, states=listaEstados, symbols=sym, transitions=transiciones)
@@ -117,7 +134,8 @@ class REParser(AbstractREParser):
 
         for s in automaton1.states:
             if s.is_final:
-                t_final=Transition(s, sym, automaton2.initial_state)
+                t_final=Transition(s, None, automaton2.initial_state)
+                s.is_final.set(False)
 
         transiciones = [automaton1.transitions, automaton2.transitions, t_final]
 
