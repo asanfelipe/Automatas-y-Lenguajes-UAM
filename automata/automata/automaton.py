@@ -51,8 +51,30 @@ class FiniteAutomaton(
 
     def to_deterministic(
         self,
-    ) -> AbstractFiniteAutomaton:
+    ) -> "FiniteAutomaton":
         
+        lista_estados = []
+        lista_transiciones = []
+
+        for t in self.transitions:
+            if t.symbol == None:
+                if t.final_state.is_final:
+                    q0 = State(name=t.initial_state.name + t.final_state.name), is_final=True)
+                    ##############################Este algoritmo repite estados##################################
+                    lista_estados.append(q0)
+                elif:
+                    q0 = State(name=t.initial_state.name + t.final_state.name), is_final=False)
+                    ##############################Este algoritmo repite estados##################################
+                    lista_estados.append(q0)
+                for aux1 in self.transitions:
+                    if aux1.final_state == t.initial_state:
+                        lista_transiciones.append(Transition(aux1.final_state, aux1.symbol, q0))
+                for aux2 in self.transitions:
+                    if aux2.initial_state == t.final_state:
+                        lista_transiciones.append(Transition(q0, aux2.symbol, aux2.initial_state))
+
+                
+
         
         # Que queremos de devuelve el metodo:
             # Nada. Modificamos las propiedas internas del objeto (self)
