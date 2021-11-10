@@ -49,6 +49,30 @@ class FiniteAutomaton(
     #     return FiniteAutomaton(self.initial_state, self.states.copy(), self.symbols, transitions)
         
 
+    def accesibleStates(
+            self,
+            start_state: State,
+            symbols: Collection[str],
+            ) -> Collection[State]:
+        accesible_states = {}
+        new_states = {}
+        for t in self.transitions:
+            if t.symbol in symbols and start_state==t.initial_state:
+                new_states.add(t.final_state)
+        accesible_states.add(new_states)
+        while(new_states):
+            previous_new_states = new_states
+            new_states = {}                                  
+            for t in self.transitions:
+                    if t.symbol in symbols and t.initial_state in previous_new_states:
+                        new_states.add(t.final_state)
+            new_states = new_states - accesible_states
+            accesible_states.add(new_states)
+            
+                
+        return accesible_states
+                
+
     def to_deterministic(
         self,
     ) -> "FiniteAutomaton":
