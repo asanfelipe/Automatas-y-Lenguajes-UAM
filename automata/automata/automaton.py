@@ -44,25 +44,10 @@ class FiniteAutomaton(
 
         # Add here additional initialization code.
         # Do not change the constructor interface.
-
-    """
-    Nuestra idea para hacer to_deterministic:
-    1. Creamos una nueva funcion llamada accesibleStates, a la que llamamos con un estado inicial y unos simbolos.
-        Esta funcion nos devolvera una lista de estados accesibles a los que se puede acceder desde el estado con los simbolos
-        que hemos pasado a la funcion.
-    2. En to_deterministic, para cada estado que hemos recogido en la lista de estados accesibles que nos ha sido devuelta por 
-        accesibleStates, lo recorremos para ver a que estados nuevos nos podemos mover con el primer simbolo (usando accesibleStates)
-        y esos estados o estado lo almacenamos en una variable con set, para que si hay estados repetidos, no se repitan.
-    3. Para almacenar los resultados utilizaremos un diccionario, ejemplo:
-        Diccionario = {'a': {set de states: set de states} , 'b':{set de states: set de states} , ...}
-	    Diccionario['a'][{0,1,2,5,f}] = {3}
-    4. Comprobamos si el resultado del paso 2 es distinto de vacío y si se encuentra en Diccionario['a'].keys(). Si no es asi
-        lo añadimos.
-    5. Hacemos lo mismo que en el paso 2 pero con otro símbolo y cuando terminemos hacemos lo mismo que en el paso 4.
-        En resumen, hacemos un bucle for para cada símbolo.
-    6. Después y si todo se ha realizado correctamente, deberíamos tener todos los datos necesarios almacenados en el diccionario
-        para poder crear el automata determinista.
-    """
+        
+    # def copy(self) -> FiniteAutomaton:
+    #     return FiniteAutomaton(self.initial_state, self.states.copy(), self.symbols, transitions)
+        
 
     def accesibleStates(
             self,
@@ -98,11 +83,11 @@ class FiniteAutomaton(
         for t in self.transitions:
             if t.symbol == None:
                 if t.final_state.is_final:
-                    q0 = State(name=str(t.initial_state.name + t.final_state.name), is_final=True)
+                    q0 = State(name=t.initial_state.name + t.final_state.name), is_final=True)
                     ##############################Este algoritmo repite estados##################################
                     lista_estados.append(q0)
-                else:
-                    q0 = State(name=str(t.initial_state.name + t.final_state.name), is_final=False)
+                elif:
+                    q0 = State(name=t.initial_state.name + t.final_state.name), is_final=False)
                     ##############################Este algoritmo repite estados##################################
                     lista_estados.append(q0)
                 for aux1 in self.transitions:
@@ -111,7 +96,18 @@ class FiniteAutomaton(
                 for aux2 in self.transitions:
                     if aux2.initial_state == t.final_state:
                         lista_transiciones.append(Transition(q0, aux2.symbol, aux2.initial_state))
+
+                
+
         
+        # Que queremos de devuelve el metodo:
+            # Nada. Modificamos las propiedas internas del objeto (self)
+            # FineteAutomaton. Creado a partir del self pero que sea determinista (sin modificar el self)
+        raise NotImplementedError("This method must be implemented.")
+        
+# aut1 = FiniteAutomaton(....)
+# Opcion 1: aut1.to_deterministic() -> a partir de ahora aurt1 es determinista
+# Opcion 2: aut2 = aut1.to_deterministic() -> tengo 2 automatas uno determinista y otro no
     def to_minimized(
         self,
     ) -> "FiniteAutomaton":
