@@ -67,7 +67,7 @@ class FiniteAutomaton(
     def accesibleStates(
             self,
             start_state: State,
-            symbols: Collection[str],
+            symbol,
             ) -> Collection[State]:
         accesible_states = {}
         new_states = {}
@@ -92,25 +92,36 @@ class FiniteAutomaton(
         self,
     ) -> "FiniteAutomaton":
         
-        lista_estados = []
-        lista_transiciones = []
+        import automaton_evaluator 
 
-        for t in self.transitions:
-            if t.symbol == None:
-                if t.final_state.is_final:
-                    q0 = State(name=str(t.initial_state.name + t.final_state.name), is_final=True)
-                    ##############################Este algoritmo repite estados##################################
-                    lista_estados.append(q0)
-                else:
-                    q0 = State(name=str(t.initial_state.name + t.final_state.name), is_final=False)
-                    ##############################Este algoritmo repite estados##################################
-                    lista_estados.append(q0)
-                for aux1 in self.transitions:
-                    if aux1.final_state == t.initial_state:
-                        lista_transiciones.append(Transition(aux1.final_state, aux1.symbol, q0))
-                for aux2 in self.transitions:
-                    if aux2.initial_state == t.final_state:
-                        lista_transiciones.append(Transition(q0, aux2.symbol, aux2.initial_state))
+        set_estados = {}
+        diccionario = {}
+
+        for s in self.symbols:
+            set_estados = accesibleStates(self.initial_state, s)
+            if set_estados != None & set_estados not in diccionario[s].keys():
+                diccionario[s] = set_estados
+
+        # lista_transiciones = []
+
+        # for t in self.transitions:
+        #     if t.symbol == None:
+        #         if t.final_state.is_final:
+        #             q0 = State(name=str(t.initial_state.name + t.final_state.name), is_final=True)
+        #             ##############################Este algoritmo repite estados##################################
+        #             lista_estados.append(q0)
+        #         else:
+        #             q0 = State(name=str(t.initial_state.name + t.final_state.name), is_final=False)
+        #             ##############################Este algoritmo repite estados##################################
+        #             lista_estados.append(q0)
+        #         for aux1 in self.transitions:
+        #             if aux1.final_state == t.initial_state:
+        #                 lista_transiciones.append(Transition(aux1.final_state, aux1.symbol, q0))
+        #         for aux2 in self.transitions:
+        #             if aux2.initial_state == t.final_state:
+        #                 lista_transiciones.append(Transition(q0, aux2.symbol, aux2.initial_state))
+
+
 
     def to_minimized(
         self,
