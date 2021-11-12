@@ -2,8 +2,11 @@
 import unittest
 from abc import ABC
 
-from automata.automaton import FiniteAutomaton
-from automata.utils import AutomataFormat, deterministic_automata_isomorphism
+import sys
+sys.path.append("D:/UNIVERSIDAD/1er cuatri/AUTLEN/PRACTICAS/P1/autlen21-22/automata/automata")
+
+from automaton import FiniteAutomaton
+from utils import AutomataFormat, deterministic_automata_isomorphism
 
 
 class TestTransform(ABC, unittest.TestCase):
