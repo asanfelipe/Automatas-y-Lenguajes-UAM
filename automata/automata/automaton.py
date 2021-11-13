@@ -58,9 +58,10 @@ class FiniteAutomaton(
         #f_initial_state_set es el conjunto de estados actuales iniciales del evaluador y que serán estados del automata determinista
         f_initial_state_set = evaluator.current_states
         #f_symbols son los simbolos finales que tendrá el automata determinista
-        f_symbols = self.symbols
+        symbols = list(self.symbols)
         #Como el automata determinista no tiene lambdas, borramos ese símbolo
-        f_symbols.remove(None)
+        symbols.remove(None)
+        f_symbols = tuple(symbols)
    
         #Inicializamos una lista de estados que tendrá el automata determinista vacia
         f_states = []
@@ -71,10 +72,9 @@ class FiniteAutomaton(
         #Inicializamos una lista de transiciones que tendrá el automata determinista vacía
         f_transitions = []        
         
-        while... #ESTO NO ESTA HECHO
-                #AQUI HABRIA QUE VER ALGUNA MANERA DE QUE SE SIGA HACIENDO EL BUCLE FOR MIENTRAS NOS VAYAN SALIENDO ESTADOS NUEVOS
-                #QUE NO TENEMOS EN LA LISTA DE ESTADOS DEL AUTOMATA DETERMINISTA (Y COMPROBAR QUE NO ESTÉ REPETIDO)
-                
+        #Recorremos todos los estados que hemos ido almacenando en el nuevo autómata finito para comprobar todas
+        #las transiciones posibles
+        for s in f_states:        
             #Para cada simbolo en los simbolos del automata
             for symbol in self.symbols:
                 #Llamamos a process_symbol con dicho simbolo
@@ -86,12 +86,15 @@ class FiniteAutomaton(
                 #Asignamos el estado "result" en la variable final_state
                 final_state = State(str(result))
                 #Añadimos a la lista de estados del automata determinista final_state
-                f_states.append(final_state)
+                if final_state not in f_states:
+                    f_states.append(final_state)
                 #Añadimos la transición a la lista de transiciones con los datos recogidos
-                f_transitions.append(Transition(f_initial_state, symbol, final_state))
+                transicion = Transition(f_initial_state, symbol, final_state)
+                if transicion not in f_transitions:
+                    f_transitions.append(transicion)
            
-        #ESTO NO ESTA HECHO
-        #AL FINAL, SE DEBERIA RETORNAR EL FINITEAUTOMATON DANDOLE LOS VALORES QUE HEMOS RECOGIDO ANTERIORMENTE
+        #Retornamos el autómata finito con los sets de datos que hemos ido almacenando
+        return FiniteAutomaton(initial_state=f_initial_state, states=f_states, symbols=f_symbols, transitions=f_transitions)
 
     def to_minimized(
         self,
