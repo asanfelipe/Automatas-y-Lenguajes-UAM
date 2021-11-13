@@ -58,10 +58,7 @@ class FiniteAutomaton(
         #f_initial_state_set es el conjunto de estados actuales iniciales del evaluador y que serán estados del automata determinista
         f_initial_state_set = evaluator.current_states
         #f_symbols son los simbolos finales que tendrá el automata determinista
-        symbols = list(self.symbols)
-        #Como el automata determinista no tiene lambdas, borramos ese símbolo
-        symbols.remove(None)
-        f_symbols = tuple(symbols)
+        f_symbols = self.symbols
    
         #Inicializamos una lista de estados que tendrá el automata determinista vacia
         f_states = []
@@ -74,7 +71,7 @@ class FiniteAutomaton(
         
         #Recorremos todos los estados que hemos ido almacenando en el nuevo autómata finito para comprobar todas
         #las transiciones posibles
-        for s in f_states:        
+        while f_states:        
             #Para cada simbolo en los simbolos del automata
             for symbol in self.symbols:
                 #Llamamos a process_symbol con dicho simbolo
