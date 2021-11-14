@@ -69,19 +69,34 @@ class FiniteAutomaton(
         #Inicializamos una lista de transiciones que tendrá el automata determinista vacía
         f_transitions = []        
         
+        print("Estado init:")
+        print(f_initial_state)
+        print("symbols")
+        print(f_symbols)
+        print("transit")
+        print(f_transitions)
+
+
         #Recorremos todos los estados que hemos ido almacenando en el nuevo autómata finito para comprobar todas
         #las transiciones posibles
-        while f_states:        
+        for s in f_states:        
+            print("states:")
+            print(s)
             #Para cada simbolo en los simbolos del automata
             for symbol in self.symbols:
+                print(symbol)
                 #Llamamos a process_symbol con dicho simbolo
                 evaluator.process_symbol(symbol)
                 #Almacenamos los estados a los que se llega con ese simbolo en una variable llamada result
                 result = evaluator.current_states
-                #Ahora tomamos como estados actuales los estados que se encontraban en la variable f_initial_state_set 
-                evaluator.current_states = f_initial_state_set
                 #Asignamos el estado "result" en la variable final_state
                 final_state = State(str(result))
+                for estados in result:
+                    if estados.is_final == True:
+                        final_state.is_final = True
+                print(final_state)
+                #Ahora tomamos como estados actuales los estados que se encontraban en la variable f_initial_state_set 
+                evaluator.current_states = f_initial_state_set
                 #Añadimos a la lista de estados del automata determinista final_state
                 if final_state not in f_states:
                     f_states.append(final_state)
