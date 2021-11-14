@@ -223,7 +223,8 @@ def deterministic_automata_isomorphism(
 
         equiv_state = equiv_map.get(state1)
         if equiv_state:
-            if equiv_state is not state2:
+            #antes estaba así: if equiv_state is not state2
+            if equiv_state != state2:
                 return None
 
         else:
