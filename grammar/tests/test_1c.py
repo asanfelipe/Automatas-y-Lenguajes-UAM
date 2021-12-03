@@ -1,3 +1,6 @@
+import ast
+import types
+import inspect
 from ast_utils import ASTReplaceNum
 
 def my_fun(p):
@@ -13,3 +16,11 @@ def my_fun(p):
     # Debería imprimir -8
     new_fun(3)
     # Debería imprimir 6
+
+def transform_code(f, transformer):
+    f_ast = ast.parse(inspect.getsource(f))
+    new_tree = ast.fix_missing_locations(transformer.visit(f_ast))
+    old_code = f.__code__
+    code = compile(new_tree, old_code.co_filename, 'exec')
+    new_f = types.FunctionType(code.co_const[0], f.__globals__)
+    return new_f
