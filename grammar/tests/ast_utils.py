@@ -53,11 +53,11 @@ class ASTReplaceNum(ast.NodeTransformer):
         self.number = number
 
     def visit_Num(self, node: ast.Num):
-        if isinstance(self.numbernumber, numbers.Number):
-            return self.visit_Num(node)
+        return self.visit_Num(self.number)
 
     def visit_Constant(self, node: ast.Constant):
-        return self.visit_Constant(node)
+        if isinstance(node, self.number):
+            return self.visit_Constant(self.number)
     
     def transform_code(f, transformer):
         f_ast = ast.parse(inspect.getsource(f))
