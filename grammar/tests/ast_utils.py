@@ -49,22 +49,24 @@ class ASTDotVisitor(ast.NodeVisitor):
 # procesar todos los nodos hijos obtenidos del nodo actual (llamada a visit)
 
 class ASTReplaceNum(ast.NodeTransformer):
-    def __init__(self, number: complex) -> None:
+
+    def __init__(self, number:complex) -> None:
         self.number = number
 
-    def visit_Num(self, node: ast.Num):
-        return self.visit_Num(self.number)
+    def visit_Num(self, node:ast.Num):
+        return ast.Num(self.number)
 
-    def visit_Constant(self, node: ast.Constant):
-        if isinstance(node, self.number):
-            return self.visit_Constant(self.number)
-    
-    def transform_code(f, transformer):
-        f_ast = ast.parse(inspect.getsource(f))
-        new_tree = ast.fix_missing_locations(transformer.visit(f_ast))
-        old_code = f.__code__
-        code = compile(new_tree, old_code.co_filename, 'exec')
-        new_f = types.FunctionType(code.co_const[0], f.__globals__)
-        return new_f
+    def visit_Constant(self, node:ast.Constant):
+        if isinstance(node.value, numbers.Number):
+            return ast.Constant(self.number)
+        return node    
+
+def transform_code(f, transformer):
+    f_ast = ast.parse(inspect.getsource(f))
+    new_tree = ast.fix_missing_locations(transformer.visit(f_ast))
+    old_code = f.__code__
+    code = compile(new_tree, old_code.co_filename, 'exec')
+    new_f = types.FunctionType(code.co_consts[0], f.__globals__)
+    return new_f
 
     

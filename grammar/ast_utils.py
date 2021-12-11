@@ -67,13 +67,13 @@ class ASTReplaceNum(ast.NodeTransformer):
             return ast.Constant(self.number)
         return node
     
-    def transform_code(f, transformer):
-        f_ast = ast.parse(inspect.getsource(f))
-        new_tree = ast.fix_missing_locations(transformer.visit(f_ast))
-        old_code = f.__code__
-        code = compile(new_tree, old_code.co_filename, 'exec')
-        new_f = types.FunctionType(code.co_const[0], f.__globals__)
-        return new_f
+def transform_code(f, transformer):
+    f_ast = ast.parse(inspect.getsource(f))
+    new_tree = ast.fix_missing_locations(transformer.visit(f_ast))
+    old_code = f.__code__
+    code = compile(new_tree, old_code.co_filename, 'exec')
+    new_f = types.FunctionType(code.co_consts[0], f.__globals__)
+    return new_f
     
 class ASTRemoveConstantIf(ast.NodeTransformer):
     def visit_If(self, node: ast.If) -> Union[ast.AST, List[ast.stmt]]:
