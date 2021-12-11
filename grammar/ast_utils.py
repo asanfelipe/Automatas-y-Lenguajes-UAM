@@ -2,6 +2,7 @@ import ast
 import numbers
 import types
 import inspect
+from typing import Union, List
 
 class ASTMagicNumberDetector(ast.NodeVisitor):
     def __init__(self) -> None:
