@@ -1,7 +1,7 @@
 import unittest
 
-from grammar.grammar import Grammar, LL1Table, TableCell, ParseTree, SyntaxError
-from grammar.utils import GrammarFormat
+from grammar import Grammar, LL1Table, TableCell, ParseTree, SyntaxError
+from utils import GrammarFormat
 from typing import Optional, Type
 
 class TestAnalyze(unittest.TestCase):
