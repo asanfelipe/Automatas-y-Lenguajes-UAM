@@ -73,5 +73,42 @@ class ASTReplaceNum(ast.NodeTransformer):
         code = compile(new_tree, old_code.co_filename, 'exec')
         new_f = types.FunctionType(code.co_const[0], f.__globals__)
         return new_f
+    
+class ASTRemoveConstantIf(ast.NodeTransformer):
+    def visit_If(self, node: ast.If) -> Union[ast.AST, List[ast.stmt]]:
+        update_body = True
+        update_orelse = True
 
+        if isinstance(node.test, ast.NameConstant):
+            if node.test.value:
+                update_orelse = False
+            else:
+                update_body = False
+
+        new_body = []
+        if update_body == True: 
+            for elem in node.body: 
+                child = self.visit(elem)
+                if isinstance(child, ast.AST):
+                    new_body.append(child) #Añadimos "child" a new body (si no es una lista -> append)
+                else:
+                    new_body.extend(child) #Concatenamos a la lista (por el final) (si es una lista -> extend)
+            if not update_orelse:
+                return new_body
+
+
+        new_orelse = []
+        if update_orelse == True:
+            for elem in node.orelse:
+                child = self.visit(elem)
+                if isinstance(child, ast.AST):
+                    new_orelse.append(child)
+                else:
+                    new_orelse.extend(child)
+            if not update_body:
+                return new_orelse
+
+        node.body = new_body
+        node.orelse = new_orelse
+        return node
     
