@@ -38,12 +38,12 @@ class ASTDotVisitor(ast.NodeVisitor):
                     if isinstance(item, type(ast)):
                         print(field)
                         print(item)
-                        item.padre = node ########no estoy segura de esto#######
+                        self.last_parent = node ########no estoy segura de esto#######
                         self.visit(item)
             elif isinstance(value, ast):
                 print(field)
                 print(value)
-                value.padre = node ########no estoy segura de esto#######
+                self.last_parent = node ########no estoy segura de esto#######
                 self.visit(value)
         self.root = 0
         if self.root == 0:
