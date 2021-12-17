@@ -31,19 +31,29 @@ class ASTDotVisitor(ast.NodeVisitor):
     def generic_visit(self, node: ast.AST) -> None:
         if self.root == 0:
             print("digraph {")
+        self.root = 1
+
+        new_nodes = []
         for field, value in ast.iter_fields(node):
-            self.root = 1
+            if (not isinstance(value, list)) and (not isinstance(value, ast)):
+                new_nodes.append(field, value)
+
+        node = 's{}'.format(self.n_node)
+        node += '[label="{}()"'.format(type(node).__name__)
+        print(node)
+        actual_node = self.n_node
+        self.n_node += 1
+
+        for field, value in ast.iter_fields(node):
             if isinstance(value, list):
                 for item in value:
                     if isinstance(item, type(ast)):
-                        print(field)
-                        print(item)
-                        self.last_parent = node ########no estoy segura de esto#######
+                        self.last_parent = actual_node
+                        self.last_field_name = field
                         self.visit(item)
             elif isinstance(value, ast):
-                print(field)
-                print(value)
-                self.last_parent = node ########no estoy segura de esto#######
+                self.last_parent = actual_node
+                self.last_field_name = field
                 self.visit(value)
         self.root = 0
         if self.root == 0:
