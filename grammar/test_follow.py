@@ -1,8 +1,8 @@
 import unittest
 from typing import AbstractSet
 
-from grammar.grammar import Grammar
-from grammar.utils import GrammarFormat
+from grammar import Grammar
+from utils import GrammarFormat
 
 
 class TestFollow(unittest.TestCase):
