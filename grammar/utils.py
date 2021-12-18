@@ -4,7 +4,7 @@ import re
 from collections import defaultdict
 from typing import AbstractSet, DefaultDict
 
-from grammar.grammar import Grammar, LL1Table, Production, ParseTree
+from grammar import Grammar, LL1Table, Production, ParseTree
 
 
 class FormatParseError(Exception):
