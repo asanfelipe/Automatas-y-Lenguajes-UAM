@@ -113,9 +113,70 @@ class Grammar:
 
         Returns:
             First set of str.
-        """
+        
+        firsts = set() #inicializamos un set vacio
+        visited = set()
 
-	# TO-DO: Complete this method for exercise 3...
+        if (sentence == "") or (sentence is None): #si la sentencia esta vacia devolvemos vacio
+            firsts.add("")
+            #print(firsts)
+            return firsts
+        for symbol in sentence: #para cada simbolo de la sentencia
+            #print(symbol)
+            if symbol in self.terminals: #si el simbolo esta en los terminales
+                firsts.add(symbol) #se añade y devuelve
+                #print(firsts)
+                return firsts
+            else:
+                if symbol in self.non_terminals: #si el simbolo esta en los no terminales
+                    for production in self.productions: #para cada produccion de todas
+                        if (production.left == symbol) and (production not in visited): #si la produccion de la izquierda es la misma que el simbolo
+                            visited.add(production) #se añade al set de visitados
+                            firsts.update(self.compute_first(production.right)) #se actualiza el set first
+                    if "" not in firsts: #si lambda no está en el conjunto se devuelve
+                        #print(firsts)
+                        return firsts
+                    else:
+                        firsts.remove("") #si lambda está en first, lo elimina
+                else:
+                    raise ValueError("Symbol not expected")
+
+        firsts.add("") #añade lambda al set
+        #print(firsts)
+        return firsts """
+        return self._first_rec(sentence, set())
+
+    def _first_rec(self, sentence: str, visited: AbstractSet[str]) -> AbstractSet[str]:
+
+        firsts = set() #inicializamos un set vacio
+
+        if (sentence == "") or (sentence is None): #si la sentencia esta vacia devolvemos vacio
+            firsts.add("")
+            #print(firsts)
+            return firsts
+        for symbol in sentence: #para cada simbolo de la sentencia
+            #print(symbol)
+            if symbol in self.terminals: #si el simbolo esta en los terminales
+                firsts.add(symbol) #se añade y devuelve
+                #print(firsts)
+                return firsts
+            else:
+                if symbol in self.non_terminals: #si el simbolo esta en los no terminales
+                    for production in self.productions: #para cada produccion de todas
+                        if (production.left == symbol) and (production not in visited): #si la produccion de la izquierda es la misma que el simbolo
+                            visited.add(production) #se añade al set de visitados
+                            firsts.update(self._first_rec(production.right, visited)) #se actualiza el set first
+                    if "" not in firsts: #si lambda no está en el conjunto se devuelve
+                        #print(firsts)
+                        return firsts
+                    else:
+                        firsts.remove("") #si lambda está en first, lo elimina
+                else:
+                    raise ValueError("Symbol not expected")
+
+        firsts.add("") #añade lambda al set
+        #print(firsts)
+        return firsts
 
 
     def compute_follow(self, symbol: str) -> AbstractSet[str]:
@@ -127,9 +188,59 @@ class Grammar:
 
         Returns:
             Follow set of symbol.
-        """
+        
+        siguientes = set()
+        visited = set()
 
-	# TO-DO: Complete this method for exercise 4...
+        for production in self.productions:
+            right = production.right
+            while symbol in right:
+                index = right.index(symbol)
+                #print(idx)
+                right = right[index+1:]
+                #print(right)
+                siguientes.update(self.compute_first(right))
+            if "" in siguientes:
+                siguientes.remove("")
+                visited.add(production.left)
+                if production.left not in visited:
+                    #visited.add(production.left)
+                    siguientes.update(self.compute_follow(production.left))
+                    #siguientes.update(self._compute_follow_rec(production.left, visited))
+                    
+        if symbol not in self.non_terminals:
+            raise ValueError("Not valid Symbol")
+        if symbol == self.axiom:
+            siguientes.add('$')
+
+        #print(siguientes)
+        return siguientes """
+        return self._compute_follow_rec(symbol, set())
+
+    def _compute_follow_rec(self, symbol: str, visited: AbstractSet[str]) -> AbstractSet[str]:
+        siguientes = set()
+
+        for production in self.productions:
+            right = production.right
+            while symbol in right:
+                index = right.index(symbol)
+                #print(idx)
+                right = right[index+1:] #iguala la derecha a partir del indice+1
+                #print(right)
+                siguientes.update(self.compute_first(right))
+            if "" in siguientes:
+                siguientes.remove("")
+                if production.left not in visited:
+                    visited.add(production.left)
+                    siguientes.update(self._compute_follow_rec(production.left, visited))
+                    
+        if symbol not in self.non_terminals:
+            raise ValueError("Not valid Symbol")
+        if symbol == self.axiom:
+            siguientes.add('$')
+
+        #print(siguientes)
+        return siguientes
 	
 
     def get_ll1_table(self) -> Optional[LL1Table]:
