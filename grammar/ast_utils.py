@@ -87,39 +87,38 @@ def transform_code(f, transformer):
     
 class ASTRemoveConstantIf(ast.NodeTransformer):
     def visit_If(self, node: ast.If) -> Union[ast.AST, List[ast.stmt]]:
-        update_body = True
-        update_orelse = True
+        body_bool = True
+        orelse_bool = True
+        body_elem = []
+        orelse_elem = []
 
         if isinstance(node.test, ast.NameConstant):
             if node.test.value:
-                update_orelse = False
+                orelse_bool = False
             else:
-                update_body = False
+                body_bool = False
 
-        new_body = []
-        if update_body == True: 
-            for elem in node.body: 
+        if body_bool == True:
+            for elem in node.body:
                 child = self.visit(elem)
                 if isinstance(child, ast.AST):
-                    new_body.append(child) #Añadimos "child" a new body (si no es una lista -> append)
+                    body_elem.append(child) #Append añade a la lista un elemento en formato lista
                 else:
-                    new_body.extend(child) #Concatenamos a la lista (por el final) (si es una lista -> extend)
-            if not update_orelse:
-                return new_body
+                    body_elem.extend(child) #Extend añade a la lista los elementos sin formato lista
+            if not orelse_bool:
+                return body_elem
 
-
-        new_orelse = []
-        if update_orelse == True:
+        if orelse_bool == True:
             for elem in node.orelse:
                 child = self.visit(elem)
                 if isinstance(child, ast.AST):
-                    new_orelse.append(child)
+                    orelse_elem.append(child)
                 else:
-                    new_orelse.extend(child)
-            if not update_body:
-                return new_orelse
+                    orelse_elem.extend(child)
+            if not body_bool:
+                return orelse_elem
 
-        node.body = new_body
-        node.orelse = new_orelse
+        node.body = body_elem
+        node.orelse = orelse_elem
         return node
     

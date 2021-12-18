@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from collections import deque
+from inspect import stack
 from typing import AbstractSet, Collection, MutableSet, Optional
 
 class RepeatedCellError(Exception):
@@ -382,14 +383,14 @@ class LL1Table:
             SyntaxError: if the input string is not syntactically correct.
         """
         
-        exp = [start]
+        stack = [start]
         input = list(input_string)
         input.reverse()
         tree = ParseTree(start)
         tree_stack = [tree]  
 
-        while len(exp) > 0 and len(input) > 0:
-            current = exp.pop()
+        while len(stack) > 0 and len(input) > 0:
+            current = stack.pop()
             if current in self.terminals:
                 if current == input[-1]:
                     input.pop()
@@ -402,8 +403,8 @@ class LL1Table:
                 else:
                     aux = list(right_side)
                     aux.reverse()
-                    exp.extend(aux)
-                    # Parser Tree
+                    stack.extend(aux)
+
                     current_node = tree_stack.pop()
                     if len(aux) > 0:
                         children = [ParseTree(ch) for ch in aux]
@@ -416,7 +417,7 @@ class LL1Table:
                         children = [ParseTree('λ')]
                     current_node.add_children(children)
 
-        if len(exp) != 0 or input != ['$']:
+        if len(stack) != 0 or input != ['$']:
             raise SyntaxError("Ill-formed string")
 
         return tree
