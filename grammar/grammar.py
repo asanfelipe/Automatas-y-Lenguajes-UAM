@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 from collections import deque
-from inspect import stack
 from typing import AbstractSet, Collection, MutableSet, Optional
+from typing import Union, List
 
 class RepeatedCellError(Exception):
     """Exception for repeated cells in LL(1) tables."""
@@ -13,13 +13,11 @@ class SyntaxError(Exception):
 class Production:
     """
     Class representing a production rule.
-
     Args:
         left: Left side of the production rule. It must be a character
             corresponding with a non terminal symbol.
         right: Right side of the production rule. It must be a string
             that will result from expanding ``left``.
-
     """
 
     def __init__(self, left: str, right: str) -> None:
@@ -115,32 +113,9 @@ class Grammar:
         Returns:
             First set of str.
         """
-        firsts = set() #inicializamos un set vacio
-        visited = set()
 
-        if (sentence == "") or (sentence is None): #si la sentencia esta vacia devolvemos vacio
-            firsts.add("")
-            return firsts
-        for symbol in sentence: #para cada simbolo de la sentencia
-            if symbol in self.terminals: #si el simbolo esta en los terminales
-                firsts.add(symbol) #se añade y devuelve
-                return firsts
-            else:
-                if symbol in self.non_terminals: #si el simbolo esta en los no terminales
-                    for production in self.productions: #para cada produccion de todas
-                        if (production.left == symbol) and (production not in visited): #si la produccion de la izquierda es la misma que el simbolo
-                            visited.add(production) #se añade al set de visitados
-                            firsts.update(self.compute_first(production.right)) #se actualiza el set first
-                    if "" not in firsts: #si lambda no está en el conjunto se devuelve
-                        return firsts
-                    else:
-                        firsts.remove("") #si lambda está en first, lo elimina
-                else:
-                    raise ValueError("Symbol not expected")
-
-        firsts.add("") #añade lambda al set
-        return firsts
-
+        conjunto = set()
+        return self.compute_first_set(sentence, conjunto)
 
     def compute_follow(self, symbol: str) -> AbstractSet[str]:
         """
@@ -152,23 +127,51 @@ class Grammar:
         Returns:
             Follow set of symbol.
         """
+
+        conjunto = set()
+        return self.compute_follow_set(symbol, conjunto)
+
+    def compute_first_set(self, sentence: str, visited: AbstractSet[str]) -> AbstractSet[str]:
+
+        primeros = set() #inicializamos un set vacio
+
+        if (sentence == "") or (sentence is None): #si la sentencia esta vacia devolvemos vacio
+            primeros.add("")
+            return primeros
+        for symbol in sentence: #para cada simbolo de la sentencia
+            if symbol in self.terminals: #si el simbolo esta en los terminales
+                primeros.add(symbol) #se añade y devuelve
+                return primeros
+            else:
+                if symbol in self.non_terminals: #si el simbolo esta en los no terminales
+                    for production in self.productions: #para cada produccion de todas
+                        if (production.left == symbol) and (production not in visited): #si la produccion de la izquierda es la misma que el simbolo
+                            visited.add(production) #se añade al set de visitados
+                            primeros.update(self.compute_first_set(production.right, visited)) #se actualiza el set first
+                    if "" not in primeros: #si lambda no está en el conjunto se devuelve
+                        return primeros
+                    else:
+                        primeros.remove("") #si lambda está en first, lo elimina
+                else:
+                    raise ValueError("Symbol not expected")
+
+        primeros.add("") #añade lambda al set
+        return primeros
+
+    def compute_follow_set(self, symbol: str, visited: AbstractSet[str]) -> AbstractSet[str]:
         siguientes = set()
-        visited = set()
 
         for production in self.productions:
             right = production.right
             while symbol in right:
                 index = right.index(symbol)
-                
-                right = right[index+1:]
-                
+                right = right[index+1:] #iguala la derecha a partir del indice+1
                 siguientes.update(self.compute_first(right))
             if "" in siguientes:
                 siguientes.remove("")
-                visited.add(production.left)
                 if production.left not in visited:
-                    #visited.add(production.left)
-                    siguientes.update(self.compute_follow(production.left))
+                    visited.add(production.left)
+                    siguientes.update(self.compute_follow_set(production.left, visited))
                     
         if symbol not in self.non_terminals:
             raise ValueError("Not valid Symbol")
@@ -186,7 +189,23 @@ class Grammar:
             LL(1) table for the grammar, or None if the grammar is not LL(1).
         """
 
-	# TO-DO: Complete this method for exercise 5...
+        cells = []
+
+        for prod in self.productions:
+            first = self.compute_first(prod.right)
+            for ele in first:
+                if ele in self.terminals:
+                    cells.append(TableCell(prod.left, ele, prod.right))
+                elif ele == "":
+                    follow = self.compute_follow(prod.left)
+                    if "$" in follow:
+                        cells.append(TableCell(prod.left, "$", prod.right))
+                    for foll in follow:
+                        if foll in self.terminals:
+                            cells.append(TableCell(prod.left, foll, prod.right))
+
+
+        return LL1Table(self.non_terminals, self.terminals.union("$"), cells)
 
 
     def is_ll1(self) -> bool:
@@ -195,12 +214,10 @@ class Grammar:
 class TableCell:
     """
     Cell of a LL1 table.
-
     Args:
         non_terminal: Non terminal symbol.
         terminal: Terminal symbol.
         right: Right part of the production rule.
-
     """
 
     def __init__(self, non_terminal: str, terminal: str, right: str) -> None:
@@ -229,12 +246,10 @@ class TableCell:
 class LL1Table:
     """
     LL1 table.
-
     Args:
         non_terminals: Set of non terminal symbols.
         terminals: Set of terminal symbols.
         cells: Cells of the table.
-
     """
 
     def __init__(
@@ -288,10 +303,8 @@ class LL1Table:
     def add_cell(self, cell: TableCell) -> None:
         """
         Adds a cell to an LL(1) table.
-
         Args:
             cell: table cell to be added.
-
         Raises:
             RepeatedCellError: if trying to add a cell already filled.
         """
@@ -304,67 +317,79 @@ class LL1Table:
     def analyze(self, input_string: str, start: str) -> ParseTree:
         """
         Method to analyze a string using the LL(1) table.
-
         Args:
             input_string: string to analyze.
             start: initial symbol.
-
         Returns:
             ParseTree object with either the parse tree (if the elective exercise is solved)
             or an empty tree (if the elective exercise is not considered).
-
         Raises:
             SyntaxError: if the input string is not syntactically correct.
         """
-        
-        stack = [start]
-        input = list(input_string)
-        input.reverse()
-        tree = ParseTree(start)
-        tree_stack = [tree]  
 
-        while len(stack) > 0 and len(input) > 0:
-            current = stack.pop()
-            if current in self.terminals:
-                if current == input[-1]:
-                    input.pop()
-                else:
-                    raise SyntaxError(f"Unexpected symbol {input[-1]}")
-            else:
-                right_side = self.cells.get((current, input[-1]), None)
-                if right_side is None:
-                    raise SyntaxError(f"Unexpected symbol {input[-1]}")
-                else:
-                    aux = list(right_side)
-                    aux.reverse()
-                    stack.extend(aux)
+	    # TO-DO: Complete this method for exercise 2...
 
-                    current_node = tree_stack.pop()
-                    if len(aux) > 0:
-                        children = [ParseTree(ch) for ch in aux]
-                        non_terminal_idx = ([i for i in range(len(aux)) if
-                                             aux[i] in self.non_terminals])
-                        tree_stack.extend([children[i] for i in
-                                           non_terminal_idx])
-                        children.reverse()
+        # We use a list as if it was a stack
+        stack = []
+        stack.append("$")
+
+        for ele in start[::-1]:
+            tree = ParseTree(ele)
+            stack.append((ele, tree))
+            if ele == start[-1]:
+                root = tree
+
+        # We itter til the last element in the stack is "$"
+        while len(stack) != 1:
+            top_tuple = stack.pop()
+
+            current_tree = top_tuple[1]
+            top = top_tuple[0]
+
+            if top in self.non_terminals and len(input_string):
+                first_input = input_string[0]
+                if (top, first_input) in self.cells.keys():
+                    new_top = self.cells[(top, first_input)]
+                    if new_top or new_top == '':
+                        children = []
+                        if new_top == "":
+                            child = ParseTree("λ")
+                            children.append(child)
+                        for ele in new_top[::-1]:
+                            child = ParseTree(ele)
+                            children.append(child)
+                            stack.append((ele, child))
+                        current_tree.add_children(children[::-1])
                     else:
-                        children = [ParseTree('λ')]
-                    current_node.add_children(children)
+                        raise SyntaxError("String is not syntactically correct.") 
+                else:
+                    raise SyntaxError("String is not syntactically correct.") 
 
-        if len(stack) != 0 or input != ['$']:
-            raise SyntaxError("Ill-formed string")
+            elif top in self.terminals:
+                if len(input_string) != 0:
+                    if top == input_string[0]:
+                        if input_string != "$":
+                            input_string = input_string[1:]
+                    else:
+                        raise SyntaxError("String is not syntactically correct.") 
+                else:
+                    raise SyntaxError("String is not syntactically correct.") 
+            else:
+                raise SyntaxError("String is not syntactically correct.") 
 
-        return tree
-    
+        if(len(input_string) != 1):
+            raise SyntaxError("String is not syntactically correct.") 
+
+        return root # Return an empty tree by default.
+
 class ParseTree():
     """
     Parse Tree.
-
     Args:
         root: root node of the tree.
         children: list of children, which are also ParseTree objects.
     """
-    def __init__(self, root: str, children: Collection[ParseTree] = []) -> None:
+    def __init__(self, root: str, children: Collection['ParseTree'] = []) -> None:
         self.root = root
         self.children = children
 
@@ -382,5 +407,5 @@ class ParseTree():
             and all([x.__eq__(y) for x, y in zip(self.children, other.children)])
         )
 
-    def add_children(self, children: Collection[ParseTree]) -> None:
+    def add_children(self, children: Collection['ParseTree']) -> None:
         self.children = children
