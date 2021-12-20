@@ -133,52 +133,52 @@ class Grammar:
 
     def compute_first_set(self, sentence: str, visited: AbstractSet[str]) -> AbstractSet[str]:
 
-        primeros = set() #inicializamos un set vacio
+        conjunto_primeros = set() #inicializamos un set vacio
 
         if (sentence == "") or (sentence is None): #si la sentencia esta vacia devolvemos vacio
-            primeros.add("")
-            return primeros
+            conjunto_primeros.add("")
+            return conjunto_primeros
         for symbol in sentence: #para cada simbolo de la sentencia
             if symbol in self.terminals: #si el simbolo esta en los terminales
-                primeros.add(symbol) #se añade y devuelve
-                return primeros
+                conjunto_primeros.add(symbol) #se añade y devuelve
+                return conjunto_primeros
             else:
                 if symbol in self.non_terminals: #si el simbolo esta en los no terminales
                     for production in self.productions: #para cada produccion de todas
                         if (production.left == symbol) and (production not in visited): #si la produccion de la izquierda es la misma que el simbolo
                             visited.add(production) #se añade al set de visitados
-                            primeros.update(self.compute_first_set(production.right, visited)) #se actualiza el set first
-                    if "" not in primeros: #si lambda no está en el conjunto se devuelve
-                        return primeros
+                            conjunto_primeros.update(self.compute_first_set(production.right, visited)) #se actualiza el set first
+                    if "" not in conjunto_primeros: #si lambda no está en el conjunto se devuelve
+                        return conjunto_primeros
                     else:
-                        primeros.remove("") #si lambda está en first, lo elimina
+                        conjunto_primeros.remove("") #si lambda está en first, lo elimina
                 else:
                     raise ValueError("Symbol not expected")
 
-        primeros.add("") #añade lambda al set
-        return primeros
+        conjunto_primeros.add("") #añade lambda al set
+        return conjunto_primeros
 
     def compute_follow_set(self, symbol: str, visited: AbstractSet[str]) -> AbstractSet[str]:
-        siguientes = set()
+        conjunto_siguientes = set()
 
         for production in self.productions:
             right = production.right
             while symbol in right:
                 index = right.index(symbol)
                 right = right[index+1:] #iguala la derecha a partir del indice+1
-                siguientes.update(self.compute_first(right))
-            if "" in siguientes:
-                siguientes.remove("")
+                conjunto_siguientes.update(self.compute_first(right))
+            if "" in conjunto_siguientes:
+                conjunto_siguientes.remove("")
                 if production.left not in visited:
                     visited.add(production.left)
-                    siguientes.update(self.compute_follow_set(production.left, visited))
+                    conjunto_siguientes.update(self.compute_follow_set(production.left, visited))
                     
         if symbol not in self.non_terminals:
             raise ValueError("Not valid Symbol")
         if symbol == self.axiom:
-            siguientes.add('$')
+            conjunto_siguientes.add('$')
 
-        return siguientes
+        return conjunto_siguientes
 	
 
     def get_ll1_table(self) -> Optional[LL1Table]:
