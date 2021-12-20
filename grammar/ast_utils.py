@@ -31,9 +31,9 @@ class ASTDotVisitor(ast.NodeVisitor):
         if self.root == 0:
             print("digraph {")
 
-        node_str = f's{self.n_node} [label = "{type(node).__name__}('
-        node_args = ""
-        current = self.n_node
+        node_string = f's{self.n_node} [label = "{type(node).__name__}('
+        node_arguments = ""
+        current_node = self.n_node
         if self.last_parent is not None:
             print(f's{self.last_parent} -> s{self.n_node} [label = "{self.last_field_name}"]')
 
@@ -44,20 +44,20 @@ class ASTDotVisitor(ast.NodeVisitor):
             if isinstance(value, list):
                 for item in value:
                     if isinstance(item, ast.AST):
-                        self.last_parent = current
+                        self.last_parent = current_node
                         self.visit(item)
             elif isinstance(value, ast.AST):
-                self.last_parent = current
+                self.last_parent = current_node
                 self.visit(value)
             else:
-                node_args += f'{field}={value!r}, '
+                node_arguments += f'{field}={value!r}, '
 
 
         self.root -= 1
-        if node_args != "":
-            node_args = node_args[:-2]  # Quita el último ', '
+        if node_arguments != "":
+            node_arguments = node_arguments[:-2]  # Quita el último ', '
 
-        print(node_str + node_args + ')"]')
+        print(node_string + node_arguments + ')"]')
 
         if self.root == 0:
             print("}")
