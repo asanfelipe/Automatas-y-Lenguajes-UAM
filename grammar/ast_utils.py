@@ -55,7 +55,7 @@ class ASTDotVisitor(ast.NodeVisitor):
 
         self.root -= 1
         if node_arguments != "":
-            node_arguments = node_arguments[:-2]  # Quita el último ', '
+            node_arguments = node_arguments[:-2]
 
         print(node_string + node_arguments + ')"]')
 

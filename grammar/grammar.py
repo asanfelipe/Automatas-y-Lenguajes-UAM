@@ -188,22 +188,19 @@ class Grammar:
         Returns:
             LL(1) table for the grammar, or None if the grammar is not LL(1).
         """
-
         cells = []
-
-        for prod in self.productions:
-            first = self.compute_first(prod.right)
-            for ele in first:
-                if ele in self.terminals:
-                    cells.append(TableCell(prod.left, ele, prod.right))
-                elif ele == "":
-                    follow = self.compute_follow(prod.left)
-                    if "$" in follow:
-                        cells.append(TableCell(prod.left, "$", prod.right))
-                    for foll in follow:
-                        if foll in self.terminals:
-                            cells.append(TableCell(prod.left, foll, prod.right))
-
+        for production in self.productions:
+            first = self.compute_first(production.right)
+            for element in first:
+                if element in self.terminals:
+                    cells.append(TableCell(production.left, element, production.right))
+                elif element == "":
+                    follows = self.compute_follow(production.left)
+                    if "$" in follows:
+                        cells.append(TableCell(production.left, "$", production.right))
+                    for follow in follows:
+                        if follow in self.terminals:
+                            cells.append(TableCell(production.left, follow, production.right))
 
         return LL1Table(self.non_terminals, self.terminals.union("$"), cells)
 
@@ -326,23 +323,17 @@ class LL1Table:
         Raises:
             SyntaxError: if the input string is not syntactically correct.
         """
-
-	    # TO-DO: Complete this method for exercise 2...
-
-        # We use a list as if it was a stack
         stack = []
         stack.append("$")
 
-        for ele in start[::-1]:
-            tree = ParseTree(ele)
-            stack.append((ele, tree))
-            if ele == start[-1]:
+        for element in start[::-1]:
+            tree = ParseTree(element)
+            stack.append((element, tree))
+            if element == start[-1]:
                 root = tree
 
-        # We itter til the last element in the stack is "$"
         while len(stack) != 1:
             top_tuple = stack.pop()
-
             current_tree = top_tuple[1]
             top = top_tuple[0]
 
@@ -355,10 +346,10 @@ class LL1Table:
                         if new_top == "":
                             child = ParseTree("λ")
                             children.append(child)
-                        for ele in new_top[::-1]:
-                            child = ParseTree(ele)
+                        for element in new_top[::-1]:
+                            child = ParseTree(element)
                             children.append(child)
-                            stack.append((ele, child))
+                            stack.append((element, child))
                         current_tree.add_children(children[::-1])
                     else:
                         raise SyntaxError("String is not syntactically correct.") 
@@ -380,7 +371,7 @@ class LL1Table:
         if(len(input_string) != 1):
             raise SyntaxError("String is not syntactically correct.") 
 
-        return root # Return an empty tree by default.
+        return root
 
 class ParseTree():
     """
